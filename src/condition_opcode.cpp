@@ -1,6 +1,7 @@
-#include "clvm/condition_opcode.h"
+#include "condition_opcode.h"
 
-namespace chia {
+namespace chia
+{
 
 uint8_t ConditionOpcode::AGG_SIG_UNSAFE[1] = { 49 };
 uint8_t ConditionOpcode::AGG_SIG_ME[1] = { 50 };

@@ -1,15 +1,15 @@
-#include "clvm/puzzle.h"
+#include "puzzle.h"
 
 #include <cassert>
 
 #include <map>
 
-#include "clvm/crypto_utils.h"
-#include "clvm/types.h"
-#include "clvm/utils.h"
+#include "clvm_utils.h"
+#include "crypto_utils.h"
+#include "types.h"
 
-#include "clvm/key.h"
-#include "clvm/condition_opcode.h"
+#include "condition_opcode.h"
+#include "key.h"
 
 namespace chia::puzzle
 {
@@ -29,10 +29,16 @@ Program PredefinedPrograms::operator[](Names name) const
     return Program::ImportFromBytes(it->second);
 }
 
-PredefinedPrograms::PredefinedPrograms() {
+PredefinedPrograms::PredefinedPrograms()
+{
     progs_[Names::DEFAULT_HIDDEN_PUZZLE] = utils::BytesFromHex("ff0980");
     progs_[Names::SYNTHETIC_MOD] = utils::BytesFromHex("ff1dff02ffff1effff0bff02ff05808080");
-    progs_[Names::MOD] = utils::BytesFromHex("ff02ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff05ffff1dff0bffff1effff0bff0bffff02ff06ffff04ff02ffff04ff17ff8080808080808080ffff01ff02ff17ff2f80ffff01ff088080ff0180ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff17ff80808080ff80808080ffff02ff17ff2f808080ff0180ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+    progs_[Names::MOD] = utils::BytesFromHex(
+        "ff02ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff05ffff1dff0bffff1effff0bff0bffff02ff06ffff04ff02ffff04ff17ff80"
+        "80808080808080ffff01ff02ff17ff2f80ffff01ff088080ff0180ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02"
+        "ffff04ff17ff80808080ff80808080ffff02ff17ff2f808080ff0180ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff01"
+        "02ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080"
+        "ff0180ff018080");
     progs_[Names::P2_CONDITIONS] = utils::BytesFromHex("ff04ffff0101ff0280");
 }
 
@@ -47,14 +53,12 @@ wallet::Key KeyFromRawPrivateKey(Bytes const& bytes)
 
 char const* SZ_GROUP_ORDER = "73EDA753299D7D483339D80809A1D80553BDA402FFFE5BFEFFFFFFFF00000001";
 
-Int GROUP_ORDER()
-{
-    return Int(utils::BytesFromHex(SZ_GROUP_ORDER));
-}
+Int GROUP_ORDER() { return Int(utils::BytesFromHex(SZ_GROUP_ORDER)); }
 
 Int calculate_synthetic_offset(PublicKey const& public_key, Bytes32 const& hidden_puzzle_hash)
 {
-    Bytes32 hash = crypto_utils::MakeSHA256(utils::bytes_cast<wallet::Key::PUB_KEY_LEN>(public_key), utils::HashToBytes(hidden_puzzle_hash));
+    Bytes32 hash = crypto_utils::MakeSHA256(
+        utils::bytes_cast<wallet::Key::PUB_KEY_LEN>(public_key), utils::HashToBytes(hidden_puzzle_hash));
     Int offset(utils::bytes_cast<utils::HASH256_LEN>(hash));
     offset %= GROUP_ORDER();
     return offset;
@@ -112,7 +116,8 @@ CLVMObjectPtr puzzle_for_conditions(CLVMObjectPtr conditions)
 {
     Cost cost;
     CLVMObjectPtr result;
-    std::tie(cost, result) = PredefinedPrograms::GetInstance()[PredefinedPrograms::Names::P2_CONDITIONS].Run(ToSExpList(conditions));
+    std::tie(cost, result)
+        = PredefinedPrograms::GetInstance()[PredefinedPrograms::Names::P2_CONDITIONS].Run(ToSExpList(conditions));
     return result;
 }
 
@@ -130,9 +135,11 @@ Program solution_for_conditions(CLVMObjectPtr conditions)
 CLVMObjectPtr make_create_coin_condition(Bytes32 const& puzzle_hash, uint64_t amount, Bytes const& memo)
 {
     if (memo.empty()) {
-        return ToSExpList(ConditionOpcode::ToBytes(ConditionOpcode::CREATE_COIN), utils::HashToBytes(puzzle_hash), amount);
+        return ToSExpList(
+            ConditionOpcode::ToBytes(ConditionOpcode::CREATE_COIN), utils::HashToBytes(puzzle_hash), amount);
     } else {
-        return ToSExpList(ConditionOpcode::ToBytes(ConditionOpcode::CREATE_COIN), utils::HashToBytes(puzzle_hash), amount, memo);
+        return ToSExpList(
+            ConditionOpcode::ToBytes(ConditionOpcode::CREATE_COIN), utils::HashToBytes(puzzle_hash), amount, memo);
     }
 }
 
@@ -143,12 +150,14 @@ CLVMObjectPtr make_reserve_fee_condition(uint64_t fee)
 
 CLVMObjectPtr make_assert_coin_announcement(Bytes32 const& announcement_hash)
 {
-    return ToSExpList(ConditionOpcode::ToBytes(ConditionOpcode::ASSERT_COIN_ANNOUNCEMENT), utils::HashToBytes(announcement_hash));
+    return ToSExpList(
+        ConditionOpcode::ToBytes(ConditionOpcode::ASSERT_COIN_ANNOUNCEMENT), utils::HashToBytes(announcement_hash));
 }
 
 CLVMObjectPtr make_assert_puzzle_announcement(Bytes32 const& announcement_hash)
 {
-    return ToSExpList(ConditionOpcode::ToBytes(ConditionOpcode::ASSERT_PUZZLE_ANNOUNCEMENT), utils::HashToBytes(announcement_hash));
+    return ToSExpList(
+        ConditionOpcode::ToBytes(ConditionOpcode::ASSERT_PUZZLE_ANNOUNCEMENT), utils::HashToBytes(announcement_hash));
 }
 
 CLVMObjectPtr make_create_coin_announcement(Bytes const& message)

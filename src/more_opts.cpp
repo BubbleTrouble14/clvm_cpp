@@ -1,12 +1,12 @@
-#include "clvm/more_opts.h"
+#include "more_opts.h"
 
 #include <stdexcept>
 
-#include "clvm/costs.h"
-#include "clvm/crypto_utils.h"
-#include "clvm/key.h"
-#include "clvm/sexp_prog.h"
-#include "clvm/utils.h"
+#include "clvm_utils.h"
+#include "costs.h"
+#include "crypto_utils.h"
+#include "key.h"
+#include "sexp_prog.h"
 
 namespace chia
 {

@@ -1,15 +1,15 @@
-#include "clvm/assemble.h"
+#include "assemble.h"
 
 #include <cctype>
 
-#include <string>
-#include <tuple>
 #include <algorithm>
 #include <optional>
+#include <string>
+#include <tuple>
 
-#include "clvm/operator_lookup.h"
-#include "clvm/sexp_prog.h"
-#include "clvm/utils.h"
+#include "clvm_utils.h"
+#include "operator_lookup.h"
+#include "sexp_prog.h"
 
 #define CONS chia::types::Type::GetInstance().ToType("CONS")
 #define NIL chia::types::Type::GetInstance().ToType("NULL")

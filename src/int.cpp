@@ -1,10 +1,10 @@
-#include "clvm/int.h"
+#include "int.h"
 
 #include <gmpxx.h>
 
 #include <sstream>
 
-#include "clvm/utils.h"
+#include "clvm_utils.h"
 
 namespace chia
 {

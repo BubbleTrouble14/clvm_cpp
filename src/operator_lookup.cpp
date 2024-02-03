@@ -1,13 +1,13 @@
-#include "clvm/operator_lookup.h"
+#include "operator_lookup.h"
 
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
-#include "clvm/core_opts.h"
-#include "clvm/costs.h"
-#include "clvm/more_opts.h"
-#include "clvm/sexp_prog.h"
-#include "clvm/utils.h"
+#include "clvm_utils.h"
+#include "core_opts.h"
+#include "costs.h"
+#include "more_opts.h"
+#include "sexp_prog.h"
 
 namespace chia
 {

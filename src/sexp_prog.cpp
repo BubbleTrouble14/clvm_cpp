@@ -1,18 +1,18 @@
-#include "clvm/sexp_prog.h"
+#include "sexp_prog.h"
 
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
-#include <algorithm>
 
 #include <sstream>
 
-#include "clvm/assemble.h"
-#include "clvm/costs.h"
-#include "clvm/crypto_utils.h"
-#include "clvm/key.h"
-#include "clvm/operator_lookup.h"
-#include "clvm/utils.h"
+#include "assemble.h"
+#include "clvm_utils.h"
+#include "costs.h"
+#include "crypto_utils.h"
+#include "key.h"
+#include "operator_lookup.h"
 
 namespace chia
 {
@@ -495,8 +495,8 @@ Bytes32 SHA256TreeHash(CLVMObjectPtr sexp, std::vector<Bytes> const& precalculat
         auto p0 = sexp_stack.Pop();
         auto p1 = sexp_stack.Pop();
         Bytes prefix = utils::ByteToBytes('\2');
-        sexp_stack.Push(
-            ToSExp(utils::HashToBytes(crypto_utils::MakeSHA256(utils::ConnectBuffers(prefix, ToBytes(p0), ToBytes(p1))))));
+        sexp_stack.Push(ToSExp(
+            utils::HashToBytes(crypto_utils::MakeSHA256(utils::ConnectBuffers(prefix, ToBytes(p0), ToBytes(p1))))));
     };
 
     Op roll = [](ValStack& sexp_stack, OpStack& op_stack) {

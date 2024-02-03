@@ -1,8 +1,8 @@
-#include "clvm/bech32.h"
+#include "bech32.h"
 
 #include <sstream>
 
-#include "clvm/utils.h"
+#include "clvm_utils.h"
 
 namespace chia
 {
@@ -13,10 +13,7 @@ static std::string CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
 static Int M { 0x2BC830A3 };
 
-bool CharInCHARSET(char ch)
-{
-    return CHARSET.find(ch) != std::string::npos;
-}
+bool CharInCHARSET(char ch) { return CHARSET.find(ch) != std::string::npos; }
 
 uint8_t ByteFromCHARSET(char ch)
 {
@@ -99,20 +96,20 @@ std::pair<std::string, std::vector<Int>> Decode(std::string_view bech_in, int ma
     std::string bech = Strip(bech_in);
     for (auto ch : bech) {
         if (ch < 33 || ch > 126) {
-            return std::make_pair("", std::vector<Int>{});
+            return std::make_pair("", std::vector<Int> {});
         }
     }
     if (chia::utils::ToLower(bech) != bech && chia::utils::ToUpper(bech) != bech) {
-        return std::make_pair("", std::vector<Int>{});
+        return std::make_pair("", std::vector<Int> {});
     }
     bech = utils::ToLower(bech);
     auto pos = bech.find_last_of("1");
     if (pos == std::string::npos || pos < 1 || pos + 7 > bech.size() || bech.size() > max_length) {
-        return std::make_pair("", std::vector<Int>{});
+        return std::make_pair("", std::vector<Int> {});
     }
     for (auto i = std::cbegin(bech) + pos + 1; i != std::cend(bech); ++i) {
         if (!CharInCHARSET(*i)) {
-            return std::make_pair("", std::vector<Int>{});
+            return std::make_pair("", std::vector<Int> {});
         }
     }
     std::string hrp = bech.substr(0, pos);
@@ -121,7 +118,7 @@ std::pair<std::string, std::vector<Int>> Decode(std::string_view bech_in, int ma
         data.push_back(Int(static_cast<uint32_t>(ByteFromCHARSET(*i))));
     }
     if (!VerifyChecksum(hrp, data)) {
-        return std::make_pair("", std::vector<Int>{});
+        return std::make_pair("", std::vector<Int> {});
     }
     return std::make_pair(hrp, data);
 }

@@ -1,6 +1,6 @@
-#include "clvm/crypto_utils.h"
+#include "crypto_utils.h"
 
-#include "clvm/utils.h"
+#include "clvm_utils.h"
 
 #include <stdexcept>
 
@@ -22,15 +22,9 @@ namespace crypto_utils
 #include <CommonCrypto/CommonCrypto.h>
 
 struct SHA256::Impl {
-    void Add(Bytes const& buff)
-    {
-        m_buff = utils::ConnectBuffers(m_buff, buff);
-    }
+    void Add(Bytes const& buff) { m_buff = utils::ConnectBuffers(m_buff, buff); }
 
-    void Finish(uint8_t* pout)
-    {
-        CC_SHA256(m_buff.data(), static_cast<CC_LONG>(m_buff.size()), pout);
-    }
+    void Finish(uint8_t* pout) { CC_SHA256(m_buff.data(), static_cast<CC_LONG>(m_buff.size()), pout); }
 
 private:
     Bytes m_buff;
@@ -53,34 +47,28 @@ struct SHA256::Impl {
         _C(EVP_DigestInit(ctx_, EVP_sha256()));
     }
 
-    ~Impl()
-    {
-        EVP_MD_CTX_destroy(ctx_);
-    }
+    ~Impl() { EVP_MD_CTX_destroy(ctx_); }
 
-    void Add(Bytes const& buff)
-    {
-        _C(EVP_DigestUpdate(ctx_, buff.data(), buff.size()));
-    }
+    void Add(Bytes const& buff) { _C(EVP_DigestUpdate(ctx_, buff.data(), buff.size())); }
 
     void Finish(uint8_t* pout)
     {
-        uint32_t size{256/8};
+        uint32_t size { 256 / 8 };
         EVP_DigestFinal_ex(ctx_, pout, &size);
     }
+
 private:
     EVP_MD_CTX* ctx_;
 };
 
 #endif
 
-
 SHA256::SHA256()
     : m_pimpl(new Impl)
 {
 }
 
-SHA256::~SHA256() {}
+SHA256::~SHA256() { }
 
 void SHA256::Add(Bytes const& bytes) { m_pimpl->Add(bytes); }
 

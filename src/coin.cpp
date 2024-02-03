@@ -1,4 +1,4 @@
-#include "clvm/coin.h"
+#include "coin.h"
 
 #include <cassert>
 
@@ -9,23 +9,24 @@
 #include <tuple>
 #include <vector>
 
-#include <schemes.hpp>
+#include <react-native-bls-signatures/schemes.hpp>
 
-#include "clvm/costs.h"
-#include "clvm/crypto_utils.h"
-#include "clvm/utils.h"
-#include "clvm/key.h"
-#include "clvm/int.h"
+#include "clvm_utils.h"
+#include "costs.h"
+#include "crypto_utils.h"
+#include "int.h"
+#include "key.h"
 
-#include "clvm/puzzle.h"
-#include "clvm/condition_opcode.h"
+#include "condition_opcode.h"
+#include "puzzle.h"
 
 namespace chia
 {
 
 /// utilities
 
-namespace puzzle {
+namespace puzzle
+{
 
 ConditionWithArgs parse_sexp_to_condition(CLVMObjectPtr sexp)
 {
@@ -46,7 +47,7 @@ ConditionWithArgs parse_sexp_to_condition(CLVMObjectPtr sexp)
         vars.push_back(iter.Next());
     }
     ConditionOpcode opcode(op);
-    return ConditionWithArgs{ opcode, vars };
+    return ConditionWithArgs { opcode, vars };
 }
 
 std::vector<ConditionWithArgs> parse_sexp_to_conditions(CLVMObjectPtr sexp)
@@ -111,7 +112,8 @@ std::tuple<std::map<ConditionOpcode, std::vector<ConditionWithArgs>>, Cost> cond
     return std::make_tuple(conditions_by_opcode(results), cost);
 }
 
-std::vector<Coin> additions_for_solution(Bytes32 coin_name, Program const& puzzle_reveal, Program const& solution, Cost max_cost)
+std::vector<Coin> additions_for_solution(
+    Bytes32 coin_name, Program const& puzzle_reveal, Program const& solution, Cost max_cost)
 {
     std::map<chia::ConditionOpcode, std::vector<chia::ConditionWithArgs>> dic;
     Cost cost;
@@ -167,7 +169,9 @@ std::vector<std::tuple<Bytes48, Bytes>> pkm_pairs_for_conditions_dict(
     return ret;
 }
 
-Program make_solution(std::vector<Payment> const& primaries, std::set<Bytes> const& coin_announcements, std::set<Bytes32> const& coin_announcements_to_assert, std::set<Bytes> const& puzzle_announcements, std::set<Bytes32> const& puzzle_announcements_to_assert, CLVMObjectPtr additions, uint64_t fee)
+Program make_solution(std::vector<Payment> const& primaries, std::set<Bytes> const& coin_announcements,
+    std::set<Bytes32> const& coin_announcements_to_assert, std::set<Bytes> const& puzzle_announcements,
+    std::set<Bytes32> const& puzzle_announcements_to_assert, CLVMObjectPtr additions, uint64_t fee)
 {
     ListBuilder condition_list;
     if (additions) {
@@ -207,7 +211,8 @@ Program make_solution(std::vector<Payment> const& primaries, std::set<Bytes> con
     return solution_for_conditions(condition_list.GetRoot());
 }
 
-std::vector<Payment> decode_payments_from_solution(Program puzzle_reveal, Program const& solution, Cost max_cost, Cost* pout_cost)
+std::vector<Payment> decode_payments_from_solution(
+    Program puzzle_reveal, Program const& solution, Cost max_cost, Cost* pout_cost)
 {
     std::vector<Payment> result;
 
@@ -233,7 +238,9 @@ std::vector<Payment> decode_payments_from_solution(Program puzzle_reveal, Progra
     return result;
 }
 
-SpendBundle sign_coin_spends(std::vector<CoinSpend> coin_spends, SecretKeyForPublicKeyFunc secret_key_for_public_key_f, SecretKeyForPuzzleHashFunc secret_key_for_puzzle_hash_f, Bytes const& additional_data, Cost max_cost, std::vector<DeriveFunc> const& derive_f_list)
+SpendBundle sign_coin_spends(std::vector<CoinSpend> coin_spends, SecretKeyForPublicKeyFunc secret_key_for_public_key_f,
+    SecretKeyForPuzzleHashFunc secret_key_for_puzzle_hash_f, Bytes const& additional_data, Cost max_cost,
+    std::vector<DeriveFunc> const& derive_f_list)
 {
     std::vector<chia::Signature> signatures;
     std::vector<chia::PublicKey> public_key_list;
@@ -263,7 +270,8 @@ SpendBundle sign_coin_spends(std::vector<CoinSpend> coin_spends, SecretKeyForPub
             if (!secret_key_opt.has_value() || wallet::Key(secret_key_opt.value()).GetPublicKey() != public_key) {
                 for (auto const& derive : derive_f_list) {
                     secret_key_opt = secret_key_for_puzzle_hash_f(derive(public_key));
-                    if (secret_key_opt.has_value() && wallet::Key(secret_key_opt.value()).GetPublicKey() == public_key) {
+                    if (secret_key_opt.has_value()
+                        && wallet::Key(secret_key_opt.value()).GetPublicKey() == public_key) {
                         private_key = secret_key_opt.value();
                         break;
                     }
@@ -321,7 +329,6 @@ Coin::Coin(Bytes32 const& parent_coin_info, Bytes32 const& puzzle_hash, uint64_t
     , puzzle_hash_(utils::bytes_cast<utils::HASH256_LEN>(puzzle_hash))
     , amount_(amount)
 {
-
 }
 
 Bytes32 Coin::GetName() const { return GetHash(); }
@@ -352,7 +359,10 @@ std::vector<Coin> CoinSpend::Additions() const
     return puzzle::additions_for_solution(coin.GetName(), puzzle_reveal.value(), solution.value(), INFINITE_COST);
 }
 
-Cost CoinSpend::ReservedFee() { return puzzle::fee_for_solution(puzzle_reveal.value(), solution.value(), INFINITE_COST); }
+Cost CoinSpend::ReservedFee()
+{
+    return puzzle::fee_for_solution(puzzle_reveal.value(), solution.value(), INFINITE_COST);
+}
 
 /*******************************************************************************
  *

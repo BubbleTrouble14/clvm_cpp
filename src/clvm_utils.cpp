@@ -1,9 +1,9 @@
-#include "clvm/utils.h"
+#include "clvm_utils.h"
 
 #include <algorithm>
+#include <cctype>
 #include <fstream>
 #include <sstream>
-#include <cctype>
 
 namespace chia
 {
@@ -18,15 +18,9 @@ Bytes StrToBytes(std::string_view str)
     return b;
 }
 
-Bytes32 BytesToHash(Bytes const& bytes)
-{
-    return bytes_cast<HASH256_LEN>(bytes);
-}
+Bytes32 BytesToHash(Bytes const& bytes) { return bytes_cast<HASH256_LEN>(bytes); }
 
-Bytes HashToBytes(Bytes32 const& hash)
-{
-    return bytes_cast<HASH256_LEN>(hash);
-}
+Bytes HashToBytes(Bytes32 const& hash) { return bytes_cast<HASH256_LEN>(hash); }
 
 Bytes32 HashFromHex(std::string_view hex)
 {
@@ -185,7 +179,8 @@ Bytes IntsToBytes(std::vector<Int> const& ints)
     Bytes res(ints.size());
     std::transform(std::cbegin(ints), std::cend(ints), std::begin(res), [](Int const& val) -> uint8_t {
         if (val.ToInt() > 0xff || val.ToInt() < 0) {
-            throw std::runtime_error("The source ints is not be able to convert to bytes, value of elements is out of range");
+            throw std::runtime_error(
+                "The source ints is not be able to convert to bytes, value of elements is out of range");
         }
         return val.ToInt();
     });
